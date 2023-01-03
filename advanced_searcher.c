@@ -78,31 +78,47 @@ int get_max2(t_list *stack, int max)
 }
 
 // now we need a function that decides which of the two max's is closer to the top of the stack or the bottom of the stack
-int closest_to_sort_exit(t_list **stackb, int content1, int content2)
+int *closest_to_sort_exit(t_list **stackb)
 {
     int distancefront;
     int distancelast;
     int size;
     int position1;
     int position2;
+    int *arr;
+    int content1;
+    int content2;
+
+    arr = malloc (sizeof(int) * 2);
+    content1 = get_max(*stackb);
+    content2 = get_max2(*stackb);
 
     position1 = get_position(*stackb, content1);
     position2 = get_position(*stackb, content2);
-    distancelast = 0;
-    distancefront = 0;
+
+ 
     size = ft_lstsize(*stackb);
-    if(position1 < size / 2)
+    if(position1 <= size / 2)
         distancefront = position1;
     else
         distancefront = size - position1;
-    if(position2 < size / 2)
+    if(position2 <= size / 2)
         distancelast = position2;
     else
         distancelast = size - position2;
-    if(distancefront < distancelast)
-        return (content1);
+    if (distancefront < distancelast)
+    {
+        arr[0] = content1;
+        arr[1] = content2;
+    }
     else
-        return (content2);
+    {
+        arr[0] = content1;
+
+        arr[1] = content2;
+     }
+    return arr;
+
 }
 // now we need a function that takes a content and pushes it to stacka using two ways either if the content position
 // is higher than the ghalf oof the stack or if it is lower than the half of the stack
@@ -114,7 +130,7 @@ void stack_pusher_a(t_list **stacka,t_list **stackb ,int content)
     int index;
     
     stacka_fixer(stacka);
-    while (ft_lstsize(*stackb))
+    while (1)
     {
         size = ft_lstsize(*stackb);
         if(size == 1)
@@ -126,7 +142,7 @@ void stack_pusher_a(t_list **stacka,t_list **stackb ,int content)
         if(index == 0)
         {
             pusha(stacka, stackb);
-            break;;
+            break;
         }
         if(index >= size / 2)
             reverse_rotate_stack_b(stackb);
@@ -140,24 +156,24 @@ void sort(t_list **stacka, t_list **stackb)
 {
     int winmax;
     int size;
-    int max1;
-    int max2;
+    int *arr;
+
 
     size = ft_lstsize(*stackb);
     while(ft_lstsize(*stackb))
     {
-        max1 = get_max(*stackb);
-        max2 = get_max2(*stackb, max1);
-        winmax = closest_to_sort_exit(stackb, max1, max2);
-        if(winmax == max1)
+
+        winmax = get_max(*stackb);
+        arr = closest_to_sort_exit(stackb);
+        if(winmax == arr[0])
         {
-            stack_pusher_a(stacka, stackb, max1);
-            stack_pusher_a(stacka, stackb, max2);
+            stack_pusher_a(stacka, stackb, arr[0]);
+
         }
         else
         {
-            stack_pusher_a(stacka, stackb, max2);
-            stack_pusher_a(stacka, stackb, max1);
+            stack_pusher_a(stacka, stackb, arr[1]);
+            stack_pusher_a(stacka, stackb, arr[0]);
         }
     }
 }
